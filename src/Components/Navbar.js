@@ -58,6 +58,9 @@ const Navbar = ({ cartCount, onSearch }) => {
             <button className="user-btn">
               <Link to="/Login">👤</Link>
             </button>
+            <button className="users-btn">
+              <Link to="/adminlogin">Admin Login</Link>
+            </button>
             <button className="cart-btn">
               🛒
               {cartCount > 0 && <span className="cart-count">{cartCount}</span>}

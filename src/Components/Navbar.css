@@ -171,3 +171,21 @@
     justify-content: center;
   }
 }
+.users-btn {
+  background: none;
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.users-btn a {
+  color: white;
+  text-decoration: none;
+}
+.users-btn:hover {
+  background: #1d4ed8;
+}
