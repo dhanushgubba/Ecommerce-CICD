@@ -231,7 +231,7 @@ const Register = () => {
         <div className="register-footer">
           <p>
             Already have an account?{' '}
-            <a href="#login" className="login-link">
+            <a href="/Login" className="login-link">
               Sign in here
             </a>
           </p>

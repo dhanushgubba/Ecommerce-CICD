@@ -14,6 +14,9 @@ import Products from './pages/Products';
 import Deals from './pages/Deals';
 import About from './pages/About';
 import Categories from './pages/Categories';
+import Dashboard from './pages/Dashboard';
+import UserNavbar from './Components/UserNavbar';
+import ProtectedRoute from './Components/ProtectedRoute';
 
 const App = () => {
   const location = useLocation();
@@ -28,9 +31,19 @@ const App = () => {
     '/deals',
     '/about',
   ].includes(location.pathname);
+  const showUserNavbar = [
+    '/dashboard',
+    '/products',
+    '/cart',
+    '/profile',
+    '/settings',
+    '/logout',
+  ].includes(location.pathname);
+
   return (
     <div>
       {showNavbar && <Navbar />}
+      {showUserNavbar && <UserNavbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -40,6 +53,14 @@ const App = () => {
         <Route path="/categories" element={<Categories />} />
         <Route path="/deals" element={<Deals />} />
         <Route path="/about" element={<About />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

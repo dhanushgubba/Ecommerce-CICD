@@ -44,17 +44,23 @@ const Login = () => {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      const data = await response.text(); // Backend returns string, not JSON
+      if (response.ok && data.includes('Login Successful')) {
+        localStorage.setItem('userEmail', formData.email);
+        localStorage.setItem('isAuthenticated', 'true');
         setStatusMessage('Login successful! Welcome back!');
-        navigate('/dashboard'); // Redirect to dashboard or home page
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1000);
+        setFormData({
+          email: '',
+          password: '',
+        });
       } else {
-        setStatusMessage('Invalid email or password. Please try again.');
+        setStatusMessage(data || 'Login failed. Please try again later.');
       }
     } catch (error) {
-      setStatusMessage(
-        'Network error. Please check your connection and try again.'
-      );
-      console.log('Login error:', error);
+      setStatusMessage('Error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,14 +90,9 @@ const Login = () => {
             <input
               type="text"
               id="email"
-              className={`form-input ${errors.email ? 'error' : ''}`}
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="Enter your email"
             />
-            {errors.email && (
-              <span className="error-message">{errors.email}</span>
-            )}
           </div>
 
           <div className="form-group">
@@ -101,14 +102,9 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              className={`form-input ${errors.password ? 'error' : ''}`}
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              placeholder="Enter your password"
             />
-            {errors.password && (
-              <span className="error-message">{errors.password}</span>
-            )}
           </div>
 
           <div className="form-options">
