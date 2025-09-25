@@ -21,7 +21,7 @@ const App = () => {
   const showNavbar = [
     '/',
     '/register',
-    '/login',
+    '/Login',
     '/contact',
     '/products',
     '/categories',
@@ -34,7 +34,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/Login" element={<Login />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/products" element={<Products />} />
         <Route path="/categories" element={<Categories />} />

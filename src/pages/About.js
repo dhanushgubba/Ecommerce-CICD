@@ -1,5 +1,6 @@
 import React from 'react';
 import './CSSFiles/About.css'; // Assuming you have a CSS file for styling
+import { Link } from 'react-router-dom';
 const About = () => {
   const teamMembers = [
     {
@@ -247,13 +248,13 @@ const About = () => {
                   <div className="team-role">{member.role}</div>
                   <p>{member.bio}</p>
                   <div className="team-social">
-                    <a href="#" aria-label="LinkedIn">
+                    <a href="/" aria-label="LinkedIn">
                       💼
                     </a>
-                    <a href="#" aria-label="Twitter">
+                    <a href="/" aria-label="Twitter">
                       🐦
                     </a>
-                    <a href="#" aria-label="Email">
+                    <a href="/" aria-label="Email">
                       ✉️
                     </a>
                   </div>
@@ -340,7 +341,9 @@ const About = () => {
               services?
             </p>
             <div className="cta-buttons">
-              <button className="cta-btn primary">Contact Us</button>
+              <button className="cta-btn primary">
+                <Link to="/contact">Contact Us</Link>
+              </button>
               <button className="cta-btn secondary">Join Our Team</button>
             </div>
           </div>
