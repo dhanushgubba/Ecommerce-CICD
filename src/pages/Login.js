@@ -44,20 +44,46 @@ const Login = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.text(); // Backend returns string, not JSON
-      if (response.ok && data.includes('Login Successful')) {
-        localStorage.setItem('userEmail', formData.email);
-        localStorage.setItem('isAuthenticated', 'true');
-        setStatusMessage('Login successful! Welcome back!');
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1000);
-        setFormData({
-          email: '',
-          password: '',
-        });
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.email && data.role) {
+          // Store user data
+          localStorage.setItem('userEmail', data.email);
+          localStorage.setItem('userRole', data.role);
+          localStorage.setItem('userId', data.id);
+          localStorage.setItem('isAuthenticated', 'true');
+
+          setStatusMessage(`Login successful! Welcome back, ${data.email}!`);
+
+          // Role-based navigation
+          setTimeout(() => {
+            switch (data.role) {
+              case 'SUPER_ADMIN':
+                navigate('/super-admin-dashboard');
+                break;
+              case 'ADMIN':
+                navigate('/admin-dashboard');
+                break;
+              case 'USER':
+              default:
+                navigate('/dashboard');
+                break;
+            }
+          }, 1000);
+
+          setFormData({
+            email: '',
+            password: '',
+          });
+        } else {
+          setStatusMessage('Login failed. Invalid response from server.');
+        }
       } else {
-        setStatusMessage(data || 'Login failed. Please try again later.');
+        // Handle error response
+        const errorData = await response.text();
+        setStatusMessage(
+          errorData || 'Login failed. Please check your credentials.'
+        );
       }
     } catch (error) {
       setStatusMessage('Error occurred. Please try again.');

@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import './Navbar.css';
 import { Link } from 'react-router-dom';
-const Navbar = ({ cartCount, onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    if (onSearch) {
-      onSearch(e.target.value);
-    }
-  };
-
+const Navbar = ({ cartCount }) => {
   return (
     <>
       {/* Header */}
@@ -43,16 +34,6 @@ const Navbar = ({ cartCount, onSearch }) => {
               </ul>
             </div>
           </nav>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-            <button className="search-btn">🔍</button>
-          </div>
 
           <div className="header-actions">
             <button className="user-btn">

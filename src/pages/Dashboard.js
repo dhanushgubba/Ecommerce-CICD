@@ -6,24 +6,20 @@ import {
   ShoppingBag,
   Users,
   DollarSign,
-  Eye,
-  Star,
   ArrowUpRight,
   ArrowDownRight,
   Package,
-  Heart,
   Clock,
   Filter,
   MoreHorizontal,
   Bell,
-  Calendar,
   Target,
   Zap,
 } from 'lucide-react';
 
 const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('7d');
-  const [notifications, setNotifications] = useState(3);
+  const notifications = 3; // Static notification count for demo
   const navigate = useNavigate();
   const userEmail = localStorage.getItem('userEmail');
 

@@ -15,8 +15,12 @@ import Deals from './pages/Deals';
 import About from './pages/About';
 import Categories from './pages/Categories';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import UserNavbar from './Components/UserNavbar';
 import ProtectedRoute from './Components/ProtectedRoute';
+import AdminNavbar from './Components/AdminNavbar';
+import AdminLogin from './pages/AdminLogin';
 
 const App = () => {
   const location = useLocation();
@@ -30,6 +34,7 @@ const App = () => {
     '/categories',
     '/deals',
     '/about',
+    '/adminlogin',
   ].includes(location.pathname);
   const showUserNavbar = [
     '/dashboard',
@@ -39,11 +44,19 @@ const App = () => {
     '/settings',
     '/logout',
   ].includes(location.pathname);
-
+  const showAdminNavbar = [
+    '/admin-dashboard',
+    '/super-admin-dashboard',
+    '/admin/home',
+    '/admin/users',
+    '/admin/settings',
+    '/admin/reports',
+  ].includes(location.pathname);
   return (
     <div>
       {showNavbar && <Navbar />}
       {showUserNavbar && <UserNavbar />}
+      {showAdminNavbar && <AdminNavbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -61,6 +74,23 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/super-admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <SuperAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/adminlogin" element={<AdminLogin />} />
       </Routes>
     </div>
   );

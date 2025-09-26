@@ -17,6 +17,21 @@ const UserNavbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const cartItemCount = 3; // This would come from your state management
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('userRole');
+  const userEmail = localStorage.getItem('userEmail');
+
+  // Determine dashboard link based on role
+  const getDashboardLink = () => {
+    switch (userRole) {
+      case 'SUPER_ADMIN':
+        return '/super-admin-dashboard';
+      case 'ADMIN':
+        return '/admin-dashboard';
+      case 'USER':
+      default:
+        return '/dashboard';
+    }
+  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -26,8 +41,10 @@ const UserNavbar = () => {
   };
 
   const handleLogout = () => {
-    // Clear all authentication data
+    // Clear all authentication data including role
     localStorage.removeItem('userEmail');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
     localStorage.removeItem('isAuthenticated');
     localStorage.clear(); // Clear any other potential data
 
@@ -44,7 +61,7 @@ const UserNavbar = () => {
       <div className="navbar-container">
         {/* Logo */}
         <div className="navbar-logo">
-          <Link to="/dashboard" className="logo-link">
+          <Link to={getDashboardLink()} className="logo-link">
             <span className="logo-text">ShopHub</span>
           </Link>
         </div>
@@ -62,7 +79,7 @@ const UserNavbar = () => {
         </div>
 
         <div className="navbar-links">
-          <Link to="/dashboard" className="nav-link">
+          <Link to={getDashboardLink()} className="nav-link">
             Dashboard
           </Link>
           <Link to="/products" className="nav-link">
@@ -144,7 +161,7 @@ const UserNavbar = () => {
         <div className="mobile-nav">
           <div className="mobile-nav-content">
             <Link
-              to="/dashboard"
+              to={getDashboardLink()}
               className="mobile-nav-link"
               onClick={toggleMenu}
             >
