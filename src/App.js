@@ -21,6 +21,7 @@ import UserNavbar from './Components/UserNavbar';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminNavbar from './Components/AdminNavbar';
 import AdminLogin from './pages/AdminLogin';
+import AdminProducts from './pages/AdminProducts';
 
 const App = () => {
   const location = useLocation();
@@ -51,6 +52,7 @@ const App = () => {
     '/admin/users',
     '/admin/settings',
     '/admin/reports',
+    '/adminproducts',
   ].includes(location.pathname);
   return (
     <div>
@@ -87,6 +89,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <SuperAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/adminproducts"
+          element={
+            <ProtectedRoute>
+              <AdminProducts />
             </ProtectedRoute>
           }
         />
