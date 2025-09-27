@@ -5,16 +5,19 @@ const AdminNavbar = () => {
       <h1>Admin Dashboard</h1>
       <ul className="nav-links">
         <li>
-          <a href="/admin/home">Home</a>
+          <a href="/admin-dashboard">Home</a>
         </li>
         <li>
-          <a href="/admin/users">Users</a>
+          <a href="/adminusers">Users</a>
         </li>
         <li>
           <a href="/admin/settings">Settings</a>
         </li>
         <li>
           <a href="/admin/reports">Reports</a>
+        </li>
+        <li>
+          <a href="/login">Logout</a>
         </li>
       </ul>
     </nav>

@@ -22,6 +22,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import AdminNavbar from './Components/AdminNavbar';
 import AdminLogin from './pages/AdminLogin';
 import AdminProducts from './pages/AdminProducts';
+import AdminUsers from './pages/AdminUsers';
 
 const App = () => {
   const location = useLocation();
@@ -52,7 +53,10 @@ const App = () => {
     '/admin/users',
     '/admin/settings',
     '/admin/reports',
-    '/adminproducts',
+    '/admin/products',
+    '/admin/orders',
+    '/admin/database',
+    '/adminusers',
   ].includes(location.pathname);
   return (
     <div>
@@ -97,6 +101,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AdminProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/adminusers"
+          element={
+            <ProtectedRoute>
+              <AdminUsers />
             </ProtectedRoute>
           }
         />

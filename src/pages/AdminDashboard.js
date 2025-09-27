@@ -117,13 +117,42 @@ const AdminDashboard = () => {
   ];
 
   const adminActions = [
-    { title: 'Manage Users', icon: Users, color: 'blue' },
-    { title: 'System Settings', icon: Settings, color: 'gray' },
-    { title: 'View Reports', icon: TrendingUp, color: 'green' },
-    { title: 'Database Admin', icon: Database, color: 'purple' },
-    { title: 'Product Management', icon: Package, color: 'orange' },
-    { title: 'Order Management', icon: ShoppingBag, color: 'red' },
+    { title: 'Manage Users', icon: Users, color: 'blue', path: '/adminusers' },
+    {
+      title: 'System Settings',
+      icon: Settings,
+      color: 'gray',
+      path: '/admin/settings',
+    },
+    {
+      title: 'View Reports',
+      icon: TrendingUp,
+      color: 'green',
+      path: '/admin/reports',
+    },
+    {
+      title: 'Database Admin',
+      icon: Database,
+      color: 'purple',
+      path: '/admin/database',
+    },
+    {
+      title: 'Product Management',
+      icon: Package,
+      color: 'orange',
+      path: '/admin/products',
+    },
+    {
+      title: 'Order Management',
+      icon: ShoppingBag,
+      color: 'red',
+      path: '/admin/orders',
+    },
   ];
+
+  const handleActionClick = (path) => {
+    navigate(path);
+  };
 
   return (
     <div className="dashboard">
@@ -210,7 +239,11 @@ const AdminDashboard = () => {
             style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
           >
             {adminActions.map((action, index) => (
-              <button key={index} className={`action-btn ${action.color}`}>
+              <button
+                key={index}
+                className={`action-btn ${action.color}`}
+                onClick={() => handleActionClick(action.path)}
+              >
                 <div className={`action-icon ${action.color}`}>
                   <action.icon className="icon" />
                 </div>
