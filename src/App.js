@@ -21,8 +21,8 @@ import UserNavbar from './Components/UserNavbar';
 import ProtectedRoute from './Components/ProtectedRoute';
 import AdminNavbar from './Components/AdminNavbar';
 import AdminLogin from './pages/AdminLogin';
-import AdminProducts from './pages/AdminProducts';
 import AdminUsers from './pages/AdminUsers';
+import AdminProducts from './pages/AdminProducts';
 
 const App = () => {
   const location = useLocation();
@@ -57,6 +57,7 @@ const App = () => {
     '/admin/orders',
     '/admin/database',
     '/adminusers',
+    '/adminproducts',
   ].includes(location.pathname);
   return (
     <div>
