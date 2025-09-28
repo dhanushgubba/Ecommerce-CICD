@@ -23,6 +23,7 @@ import AdminNavbar from './Components/AdminNavbar';
 import AdminLogin from './pages/AdminLogin';
 import AdminUsers from './pages/AdminUsers';
 import AdminProducts from './pages/AdminProducts';
+import UserProducts from './pages/UserProducts';
 
 const App = () => {
   const location = useLocation();
@@ -43,6 +44,7 @@ const App = () => {
     '/products',
     '/cart',
     '/profile',
+    '/userproducts',
     '/settings',
     '/logout',
   ].includes(location.pathname);
@@ -78,6 +80,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/userproducts"
+          element={
+            <ProtectedRoute>
+              <UserProducts />
             </ProtectedRoute>
           }
         />

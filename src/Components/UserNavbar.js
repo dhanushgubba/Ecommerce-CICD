@@ -82,7 +82,7 @@ const UserNavbar = () => {
           <Link to={getDashboardLink()} className="nav-link">
             Dashboard
           </Link>
-          <Link to="/products" className="nav-link">
+          <Link to="/userproducts" className="nav-link">
             Products
           </Link>
           <Link to="/wishlist" className="nav-link wishlist-link">
