@@ -53,6 +53,20 @@ const Login = () => {
           localStorage.setItem('userId', data.id);
           localStorage.setItem('isAuthenticated', 'true');
 
+          // Store additional user data if available
+          if (data.name) {
+            localStorage.setItem('userName', data.name);
+          }
+          if (data.phone) {
+            localStorage.setItem('userPhone', data.phone);
+          }
+          if (data.address) {
+            localStorage.setItem('userAddress', data.address);
+          }
+
+          // Store complete user object for easy access
+          localStorage.setItem('currentUser', JSON.stringify(data));
+
           setStatusMessage(`Login successful! Welcome back, ${data.email}!`);
 
           // Role-based navigation

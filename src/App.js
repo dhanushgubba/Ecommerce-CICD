@@ -24,6 +24,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminUsers from './pages/AdminUsers';
 import AdminProducts from './pages/AdminProducts';
 import UserProducts from './pages/UserProducts';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   const location = useLocation();
@@ -47,6 +48,7 @@ const App = () => {
     '/userproducts',
     '/settings',
     '/logout',
+    '/profile',
   ].includes(location.pathname);
   const showAdminNavbar = [
     '/admin-dashboard',
@@ -80,6 +82,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           }
         />

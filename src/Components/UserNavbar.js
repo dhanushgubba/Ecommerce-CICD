@@ -19,7 +19,7 @@ const UserNavbar = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
   const userEmail = localStorage.getItem('userEmail');
-
+  const userName = localStorage.getItem('username');
   // Determine dashboard link based on role
   const getDashboardLink = () => {
     switch (userRole) {
@@ -32,6 +32,7 @@ const UserNavbar = () => {
         return '/dashboard';
     }
   };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -39,14 +40,20 @@ const UserNavbar = () => {
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
-
+  const getLoginUserEmail = () => {
+    return userEmail ? userEmail : 'Guest';
+  };
+  const getLoginUserName = () => {
+    return userName ? userName : 'Guest';
+  };
   const handleLogout = () => {
     // Clear all authentication data including role
+    localStorage.removeItem('username');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
     localStorage.removeItem('isAuthenticated');
-    localStorage.clear(); // Clear any other potential data
+    localStorage.clear();
 
     // Navigate to login and replace the current history entry
     navigate('/Login', { replace: true });
@@ -103,7 +110,7 @@ const UserNavbar = () => {
           <div className="user-menu-container">
             <button className="user-menu-button" onClick={toggleUserMenu}>
               <User className="user-icon" />
-              <span className="user-name">John Doe</span>
+              <span className="user-name">{getLoginUserName()}</span>
             </button>
 
             {isUserMenuOpen && (
@@ -114,8 +121,10 @@ const UserNavbar = () => {
                       <User className="avatar-icon" />
                     </div>
                     <div className="user-details">
-                      <span className="user-display-name">John Doe</span>
-                      <span className="user-email">john.doe@example.com</span>
+                      <span className="user-display-name">
+                        {getLoginUserName()}
+                      </span>
+                      <span className="user-email">{getLoginUserEmail()}</span>
                     </div>
                   </div>
                 </div>
