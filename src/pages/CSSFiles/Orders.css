@@ -1,0 +1,376 @@
+/* Orders Page Styles */
+.orders-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.orders-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header */
+.orders-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.orders-header h1 {
+  font-size: 2.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.orders-header p {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* Loading State */
+.loading-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #718096;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #3182ce;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.error-container {
+  text-align: center;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-container h2 {
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}
+
+.retry-btn {
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+/* No Orders State */
+.no-orders {
+  text-align: center;
+  background: white;
+  padding: 4rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.no-orders-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-orders h2 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.no-orders p {
+  color: #718096;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.start-shopping-btn {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+}
+
+.start-shopping-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(49, 130, 206, 0.4);
+}
+
+/* Orders List */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Order Header */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.order-info h3 {
+  color: #2d3748;
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.order-date {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.order-status .status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-new {
+  color: #d69e2e;
+  background: #fef5e7;
+}
+
+.status-confirmed {
+  color: #38a169;
+  background: #f0fff4;
+}
+
+.status-shipped {
+  color: #3182ce;
+  background: #ebf8ff;
+}
+
+.status-delivered {
+  color: #38a169;
+  background: #f0fff4;
+}
+
+.status-cancelled {
+  color: #e53e3e;
+  background: #fed7d7;
+}
+
+/* Order Details */
+.order-details {
+  margin-bottom: 1.5rem;
+}
+
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.summary-item span:first-child {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+.summary-item span:last-child {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 1.2rem !important;
+  color: #3182ce !important;
+}
+
+/* Order Items */
+.order-items {
+  margin-top: 1rem;
+}
+
+.order-items h4 {
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.items-list {
+  background: #f7fafc;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.order-item {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.product-id {
+  color: #718096;
+  flex: 1;
+}
+
+.quantity {
+  color: #4a5568;
+  font-weight: 500;
+  margin: 0 1rem;
+}
+
+.price {
+  color: #3182ce;
+  font-weight: 600;
+}
+
+/* Order Actions */
+.order-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-secondary {
+  background: #f7fafc;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+.btn-danger {
+  background: #fed7d7;
+  color: #c53030;
+  border: 2px solid #feb2b2;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: #feb2b2;
+  border-color: #fc8181;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .orders-container {
+    padding: 0 0.5rem;
+  }
+
+  .orders-header h1 {
+    font-size: 2rem;
+  }
+
+  .order-card {
+    padding: 1.5rem;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .order-summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .item-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .order-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .orders-page {
+    padding: 1rem 0;
+  }
+
+  .orders-header {
+    margin-bottom: 2rem;
+  }
+
+  .orders-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .order-card {
+    padding: 1rem;
+  }
+}

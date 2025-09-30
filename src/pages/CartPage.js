@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './CSSFiles/CartPage.css';
-import { Link } from 'react-router-dom';
 
 const CartPage = () => {
   const [cart, setCart] = useState([]); // Initialize as empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [checkoutData, setCheckoutData] = useState({
+    address: '',
+    paymentMethod: 'credit-card',
+    phoneNumber: '',
+  });
   const userId = localStorage.getItem('userId');
   // Fetch product details by ID
   const fetchProductDetails = async (productId) => {
@@ -196,6 +201,100 @@ const CartPage = () => {
     }
   };
 
+  // Show checkout modal
+  const handleCheckout = () => {
+    if (!cart || cart.length === 0) {
+      alert(
+        'Your cart is empty. Please add items before proceeding to checkout.'
+      );
+      return;
+    }
+    setShowCheckoutModal(true);
+  };
+
+  // Process the actual order
+  const processOrder = async () => {
+    if (!checkoutData.address.trim()) {
+      alert('Please enter a delivery address.');
+      return;
+    }
+
+    if (!checkoutData.phoneNumber.trim()) {
+      alert('Please enter a phone number.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const orderPayLoad = {
+        userId: parseInt(userId),
+        totalPrice: parseFloat(calculateTotal()),
+        items: cart.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      };
+
+      console.log('Placing order with payload:', orderPayLoad);
+
+      const response = await fetch('http://localhost:8084/api/orders/place', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderPayLoad),
+      });
+
+      if (response.ok) {
+        const orderResult = await response.json();
+        console.log('Order placed successfully:', orderResult);
+
+        // Store order details for success page
+        localStorage.setItem(
+          'lastOrder',
+          JSON.stringify({
+            id: orderResult.id || Math.floor(Math.random() * 100000),
+            totalPrice: calculateTotal(),
+            orderDate: new Date().toLocaleDateString(),
+            status: orderResult.status || 'NEW',
+            address: checkoutData.address,
+            phoneNumber: checkoutData.phoneNumber,
+            itemCount: cart.length,
+            shippingAddress: checkoutData.address,
+            paymentMethod: checkoutData.paymentMethod,
+          })
+        );
+
+        // Clear the cart after successful order
+        await clearCart();
+
+        // Close modal
+        setShowCheckoutModal(false);
+
+        // Reset checkout data
+        setCheckoutData({
+          address: '',
+          paymentMethod: 'credit-card',
+          phoneNumber: '',
+        });
+
+        // Redirect to success page
+        window.location.href = '/order-success';
+      } else {
+        const errorData = await response.json();
+        console.error('Order placement failed:', errorData);
+        alert('Failed to place order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('An error occurred during checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Calculate cart totals
   const calculateSubtotal = () => {
     return cart
@@ -360,8 +459,12 @@ const CartPage = () => {
                 </div>
 
                 <div className="cart-actions">
-                  <button className="checkout-btn">
-                    <Link to="/checkout">Proceed to Checkout</Link>
+                  <button
+                    className="checkout-btn"
+                    onClick={handleCheckout}
+                    disabled={loading || cart.length === 0}
+                  >
+                    {loading ? '🔄 Processing...' : '🔒 Proceed to Checkout'}
                   </button>
                   <button
                     className="continue-shopping-btn"
@@ -377,6 +480,133 @@ const CartPage = () => {
                 <div className="shipping-info">
                   <p>💚 Free shipping on orders over $50</p>
                   <p>📦 Estimated delivery: 3-5 business days</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Checkout Modal */}
+        {showCheckoutModal && (
+          <div className="checkout-modal-overlay">
+            <div className="checkout-modal">
+              <div className="modal-header">
+                <h2>🛒 Complete Your Order</h2>
+                <button
+                  className="close-modal"
+                  onClick={() => setShowCheckoutModal(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="modal-content">
+                <div className="order-summary-section">
+                  <h3>Order Summary</h3>
+                  <div className="summary-details">
+                    <div className="summary-line">
+                      <span>Items ({cart.length}):</span>
+                      <span>${calculateSubtotal()}</span>
+                    </div>
+                    <div className="summary-line">
+                      <span>Tax:</span>
+                      <span>
+                        ${(parseFloat(calculateSubtotal()) * 0.08).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="summary-line">
+                      <span>Shipping:</span>
+                      <span>
+                        {parseFloat(calculateSubtotal()) > 50
+                          ? 'FREE'
+                          : '$9.99'}
+                      </span>
+                    </div>
+                    <div className="summary-line total">
+                      <span>Total:</span>
+                      <span>${calculateTotal()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="checkout-form">
+                  <div className="form-group">
+                    <label htmlFor="address">📍 Delivery Address *</label>
+                    <textarea
+                      id="address"
+                      placeholder="Enter your complete delivery address..."
+                      value={checkoutData.address}
+                      onChange={(e) =>
+                        setCheckoutData({
+                          ...checkoutData,
+                          address: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="phone">📱 Phone Number *</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      placeholder="Enter your phone number"
+                      value={checkoutData.phoneNumber}
+                      onChange={(e) =>
+                        setCheckoutData({
+                          ...checkoutData,
+                          phoneNumber: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="payment">💳 Payment Method</label>
+                    <select
+                      id="payment"
+                      value={checkoutData.paymentMethod}
+                      onChange={(e) =>
+                        setCheckoutData({
+                          ...checkoutData,
+                          paymentMethod: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="credit-card">💳 Credit Card</option>
+                      <option value="debit-card">💳 Debit Card</option>
+                      <option value="paypal">🅿️ PayPal</option>
+                      <option value="cash-on-delivery">
+                        💵 Cash on Delivery
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="delivery-info">
+                    <p>📦 Estimated delivery: 3-5 business days</p>
+                    <p>🔒 Your payment information is secure</p>
+                  </div>
+
+                  <div className="modal-actions">
+                    <button
+                      className="place-order-btn"
+                      onClick={processOrder}
+                      disabled={loading}
+                    >
+                      {loading
+                        ? '🔄 Processing...'
+                        : `🔒 Place Order - $${calculateTotal()}`}
+                    </button>
+                    <button
+                      className="cancel-btn"
+                      onClick={() => setShowCheckoutModal(false)}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -27,6 +27,8 @@ import UserProducts from './pages/UserProducts';
 import UserProfile from './pages/UserProfile';
 import CartPage from './pages/CartPage';
 import CheckOutPage from './pages/CheckoutPage';
+import Orders from './pages/Orders';
+import OrderSuccess from './pages/OrderSuccess';
 
 const App = () => {
   const location = useLocation();
@@ -53,6 +55,8 @@ const App = () => {
     '/profile',
     '/checkout',
     '/cart',
+    '/orders',
+    '/order-success',
   ].includes(location.pathname);
   const showAdminNavbar = [
     '/admin-dashboard',
@@ -151,6 +155,22 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CheckOutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order-success"
+          element={
+            <ProtectedRoute>
+              <OrderSuccess />
             </ProtectedRoute>
           }
         />
