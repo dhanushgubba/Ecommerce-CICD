@@ -25,6 +25,8 @@ import AdminUsers from './pages/AdminUsers';
 import AdminProducts from './pages/AdminProducts';
 import UserProducts from './pages/UserProducts';
 import UserProfile from './pages/UserProfile';
+import CartPage from './pages/CartPage';
+import CheckOutPage from './pages/CheckoutPage';
 
 const App = () => {
   const location = useLocation();
@@ -49,6 +51,8 @@ const App = () => {
     '/settings',
     '/logout',
     '/profile',
+    '/checkout',
+    '/cart',
   ].includes(location.pathname);
   const showAdminNavbar = [
     '/admin-dashboard',
@@ -133,7 +137,23 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckOutPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

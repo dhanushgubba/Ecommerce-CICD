@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './CSSFiles/UserProducts.css';
-
+import axios from 'axios';
 const UserProducts = () => {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [wishlist, setWishlist] = useState([]);
   const [notifications, setNotifications] = useState([]);
-
+  const userId = localStorage.getItem('userId');
   const fetchProducts = async () => {
     setLoading(true);
     setMessage('');
@@ -118,6 +118,49 @@ const UserProducts = () => {
     );
   };
 
+  const addToCart = async (product) => {
+    try {
+      if (!userId) {
+        addNotification('Please login to add items to cart.', 'error');
+        return;
+      }
+
+      // Call backend API to add item to cart
+      const response = await axios.post(
+        `http://localhost:8085/api/cart/${userId}/add`,
+        null,
+        {
+          params: {
+            productId: product.id,
+            quantity: 1,
+          },
+        }
+      );
+
+      console.log('Item added to cart:', response.data);
+      // Show success notification
+      addNotification(`${product.name} added to cart! 🛒`, 'success');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+
+      // More detailed error handling
+      if (error.response) {
+        // Backend returned an error response
+        const errorMessage =
+          error.response.data?.message || 'Failed to add to cart';
+        addNotification(errorMessage, 'error');
+      } else if (error.request) {
+        // Network error
+        addNotification(
+          'Network error. Please check if the cart service is running.',
+          'error'
+        );
+      } else {
+        // Other error
+        addNotification('Failed to add to cart. Please try again.', 'error');
+      }
+    }
+  };
   return (
     <div className="user-products">
       {/* Notifications Container */}
@@ -228,6 +271,7 @@ const UserProducts = () => {
                   <button
                     className="btn-primary"
                     disabled={product.quantity === 0}
+                    onClick={() => addToCart(product)}
                   >
                     {product.quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
                   </button>
