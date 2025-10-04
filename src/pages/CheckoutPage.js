@@ -125,6 +125,13 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Validate phone number is numeric and within range
+    const phoneNum = parseInt(checkoutData.phoneNumber);
+    if (isNaN(phoneNum) || phoneNum <= 0) {
+      alert('Please enter a valid phone number (numbers only).');
+      return;
+    }
+
     if (
       checkoutData.paymentMethod === 'credit-card' ||
       checkoutData.paymentMethod === 'debit-card'
@@ -147,28 +154,28 @@ const CheckoutPage = () => {
         userId: parseInt(userId),
         totalPrice: parseFloat(calculateTotal()),
         address: checkoutData.address,
-        phoneno: String(checkoutData.phoneNumber), // Ensure it's sent as string
-        paymentMethod: checkoutData.paymentMethod,
+        phoneno: parseInt(checkoutData.phoneNumber), // Convert to Long as expected by backend
+        status: 'NEW',
         items: cartItems.map((item) => ({
-          productId: item.productId || item.id, // Use productId first, fallback to id
-          quantity: item.quantity,
-          price: item.price,
-          name: item.name, // Add product name for better tracking
-          brand: item.brand, // Add brand for better tracking
+          productId: parseInt(item.productId || item.id), // Store in OrderItem where it belongs
+          quantity: parseInt(item.quantity), // Store in OrderItem where it belongs
+          price: parseFloat(item.price), // Store in OrderItem where it belongs
         })),
       };
 
-      console.log('Cart items before mapping:', cartItems);
-      console.log('Placing order with payload:', orderPayLoad);
+      console.log('🛒 Cart items before mapping:', cartItems);
+      console.log('📦 Order payload being sent:', orderPayLoad);
 
-      // Debug: Show exactly which product IDs are being sent
-      const productIds = cartItems.map((item) => ({
+      // Debug: Show exactly which product IDs and quantities are being sent
+      const productDetails = cartItems.map((item) => ({
         originalId: item.id,
         productId: item.productId,
-        finalProductId: item.productId || item.id,
+        finalProductId: parseInt(item.productId || item.id),
         name: item.name,
+        quantity: parseInt(item.quantity),
+        price: parseFloat(item.price),
       }));
-      console.log('Product ID mapping for tracking:', productIds);
+      console.log('📊 Product details for OrderItems:', productDetails);
 
       const response = await fetch('http://localhost:8084/api/orders/place', {
         method: 'POST',
@@ -190,15 +197,22 @@ const CheckoutPage = () => {
           };
         }
 
-        console.log('Order placed successfully:', orderResult);
-        console.log(
-          '✅ ORDER TRACKING: Order ID',
-          orderResult.id,
-          'contains products:',
-          cartItems
-            .map((item) => `${item.productId || item.id} (${item.name})`)
-            .join(', ')
-        );
+        console.log('✅ Order placed successfully:', orderResult);
+        console.log('🎯 ORDER TRACKING SUMMARY:');
+        console.log('   📋 Order ID:', orderResult.id);
+        console.log('   👤 User ID:', userId);
+        console.log('   💰 Total Price:', calculateTotal());
+        console.log('   📦 Items Count:', cartItems.length);
+        console.log('   🏠 Address:', checkoutData.address);
+        console.log('   📞 Phone:', checkoutData.phoneNumber);
+
+        cartItems.forEach((item, index) => {
+          console.log(
+            `   ${index + 1}. Product ID: ${item.productId || item.id} | ${
+              item.name
+            } | Qty: ${item.quantity} | Price: $${item.price}`
+          );
+        });
 
         // Store order details for success page with PRODUCT IDs
         localStorage.setItem(
