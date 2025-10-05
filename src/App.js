@@ -29,6 +29,10 @@ import CartPage from './pages/CartPage';
 import CheckOutPage from './pages/CheckoutPage';
 import Orders from './pages/Orders';
 import OrderSuccess from './pages/OrderSuccess';
+import SuperAdminNavbar from './Components/SuperAdminNavbar';
+import AdminOrders from './pages/AdminOrders';
+import AllUsers from './pages/AllUsers';
+import AllOrders from './pages/AllOrders';
 
 const App = () => {
   const location = useLocation();
@@ -60,22 +64,28 @@ const App = () => {
   ].includes(location.pathname);
   const showAdminNavbar = [
     '/admin-dashboard',
+    '/adminusers',
+    '/adminproducts',
+    '/adminorders',
+  ].includes(location.pathname);
+
+  const showSuperAdminNavbar = [
     '/super-admin-dashboard',
     '/admin/home',
-    '/admin/users',
+    '/allusers',
     '/admin/settings',
     '/admin/reports',
     '/admin/products',
-    '/admin/orders',
+    '/allorders',
     '/admin/database',
-    '/adminusers',
-    '/adminproducts',
   ].includes(location.pathname);
+
   return (
     <div>
       {showNavbar && <Navbar />}
       {showUserNavbar && <UserNavbar />}
       {showAdminNavbar && <AdminNavbar />}
+      {showSuperAdminNavbar && <SuperAdminNavbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -134,6 +144,14 @@ const App = () => {
           }
         />
         <Route
+          path="/adminorders"
+          element={
+            <ProtectedRoute>
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/adminusers"
           element={
             <ProtectedRoute>
@@ -171,6 +189,22 @@ const App = () => {
           element={
             <ProtectedRoute>
               <OrderSuccess />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/allusers"
+          element={
+            <ProtectedRoute>
+              <AllUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/allorders"
+          element={
+            <ProtectedRoute>
+              <AllOrders />
             </ProtectedRoute>
           }
         />

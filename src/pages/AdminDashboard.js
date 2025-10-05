@@ -122,31 +122,31 @@ const AdminDashboard = () => {
       title: 'System Settings',
       icon: Settings,
       color: 'gray',
-      path: '/admin/settings',
+      path: '/adminsettings',
     },
     {
       title: 'View Reports',
       icon: TrendingUp,
       color: 'green',
-      path: '/admin/reports',
+      path: '/adminreports',
     },
     {
       title: 'Database Admin',
       icon: Database,
       color: 'purple',
-      path: '/admin/database',
+      path: '/admindatabase',
     },
     {
       title: 'Product Management',
       icon: Package,
       color: 'orange',
-      path: '/admin/products',
+      path: '/adminproducts',
     },
     {
       title: 'Order Management',
       icon: ShoppingBag,
       color: 'red',
-      path: '/admin/orders',
+      path: '/adminorders',
     },
   ];
 
