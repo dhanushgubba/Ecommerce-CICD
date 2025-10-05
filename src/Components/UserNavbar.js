@@ -19,7 +19,7 @@ const UserNavbar = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
   const userEmail = localStorage.getItem('userEmail');
-  const userName = localStorage.getItem('username');
+  const userName = localStorage.getItem('userName');
   // Determine dashboard link based on role
   const getDashboardLink = () => {
     switch (userRole) {

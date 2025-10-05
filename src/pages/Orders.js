@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './CSSFiles/Orders.css';
 
 const Orders = () => {
@@ -9,12 +9,20 @@ const Orders = () => {
 
   useEffect(() => {
     fetchUserOrders();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchUserOrders = async () => {
+    if (!userId) {
+      setError('User not logged in. Please login to view orders.');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
+
+      console.log('🔍 Fetching orders for user ID:', userId);
 
       const response = await fetch(
         `http://localhost:8084/api/orders/user/${userId}`,
@@ -26,33 +34,99 @@ const Orders = () => {
         }
       );
 
+      console.log('📥 Orders API response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch orders');
+        if (response.status === 404) {
+          console.log('📦 No orders found for user');
+          setOrders([]);
+          return;
+        }
+        throw new Error(`Failed to fetch orders: ${response.status}`);
       }
 
-      const ordersData = await response.json();
-      console.log('Orders data received:', ordersData);
+      let ordersData;
+      try {
+        const responseText = await response.text();
+        console.log('📥 Raw response:', responseText.substring(0, 500) + '...');
+        ordersData = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error('❌ JSON Parse Error:', jsonError);
+        console.error(
+          '❌ This indicates a backend serialization issue with circular references'
+        );
+        throw new Error(
+          'Invalid response from server. Please check backend Order/OrderItem models for circular references.'
+        );
+      }
+
+      console.log('📦 Orders data received:', ordersData);
+      console.log('📊 Number of orders:', ordersData?.length || 0);
+
+      ordersData?.forEach((order, index) => {
+        console.log(`Order ${index + 1}:`, {
+          id: order.id,
+          userId: order.userId,
+          status: order.status,
+          totalPrice: order.totalPrice,
+          itemsCount: order.items?.length || 0,
+          items: order.items?.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        });
+      });
+
       setOrders(ordersData || []);
     } catch (error) {
-      console.error('Error fetching orders:', error);
-      setError('Failed to load orders');
+      console.error('❌ Error fetching orders:', error);
+      setError(`Failed to load orders: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const cancelUserOrder = async (orderId) => {
+    if (!userId) {
+      setError('User not logged in. Please login to manage orders.');
+      return;
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:8084/api/orders/${orderId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to cancel order: ${response.status}`);
+      }
+      // Optionally, you can update the UI or state after a successful cancellation
+    } catch (error) {
+      console.error('❌ Error cancelling order:', error);
+      setError(`Failed to cancel order: ${error.message}`);
+    }
+  };
   const getStatusColor = (status) => {
     switch (status?.toUpperCase()) {
       case 'NEW':
         return 'status-new';
-      case 'CONFIRMED':
-        return 'status-confirmed';
-      case 'SHIPPED':
-        return 'status-shipped';
-      case 'DELIVERED':
-        return 'status-delivered';
+      case 'PROCESSING':
+        return 'status-processing';
+      case 'COMPLETED':
+        return 'status-completed';
       case 'CANCELLED':
         return 'status-cancelled';
+      case 'CONFIRMED':
+        return 'status-processing';
+      case 'SHIPPED':
+        return 'status-processing';
+      case 'DELIVERED':
+        return 'status-completed';
       default:
         return 'status-new';
     }
@@ -144,6 +218,18 @@ const Orders = () => {
                         ${order.totalPrice?.toFixed(2) || '0.00'}
                       </span>
                     </div>
+                    {order.address && (
+                      <div className="summary-item">
+                        <span>Delivery Address:</span>
+                        <span className="address">{order.address}</span>
+                      </div>
+                    )}
+                    {order.phoneno && (
+                      <div className="summary-item">
+                        <span>Contact:</span>
+                        <span className="phone">{order.phoneno}</span>
+                      </div>
+                    )}
                   </div>
 
                   {order.items && order.items.length > 0 && (
@@ -153,15 +239,31 @@ const Orders = () => {
                         {order.items.map((item, index) => (
                           <div key={item.id || index} className="order-item">
                             <div className="item-info">
-                              <span className="product-id">
-                                Product ID: {item.productId}
-                              </span>
-                              <span className="quantity">
-                                Qty: {item.quantity}
-                              </span>
-                              <span className="price">
-                                ${item.price?.toFixed(2) || '0.00'}
-                              </span>
+                              <div className="item-main">
+                                <span className="product-name">
+                                  {item.name || `Product #${item.productId}`}
+                                </span>
+                                <span className="product-brand">
+                                  {item.brand && `by ${item.brand}`}
+                                </span>
+                              </div>
+                              <div className="item-details">
+                                <span className="product-id">
+                                  ID: {item.productId}
+                                </span>
+                                <span className="quantity">
+                                  Qty: {item.quantity}
+                                </span>
+                                <span className="price">
+                                  ${item.price?.toFixed(2) || '0.00'} each
+                                </span>
+                                <span className="total">
+                                  Total: $
+                                  {(
+                                    (item.price || 0) * (item.quantity || 0)
+                                  ).toFixed(2)}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -173,7 +275,12 @@ const Orders = () => {
                 <div className="order-actions">
                   <button className="btn-secondary">View Details</button>
                   {order.status === 'NEW' && (
-                    <button className="btn-danger">Cancel Order</button>
+                    <button
+                      className="btn-danger"
+                      onClick={() => cancelUserOrder(order.id)}
+                    >
+                      Cancel Order
+                    </button>
                   )}
                 </div>
               </div>
