@@ -33,6 +33,8 @@ import SuperAdminNavbar from './Components/SuperAdminNavbar';
 import AdminOrders from './pages/AdminOrders';
 import AllUsers from './pages/AllUsers';
 import AllOrders from './pages/AllOrders';
+import AllAdmins from './pages/AllAdmins';
+import AllProducts from './pages/AllProducts';
 
 const App = () => {
   const location = useLocation();
@@ -77,7 +79,9 @@ const App = () => {
     '/admin/reports',
     '/admin/products',
     '/allorders',
+    '/alladmins',
     '/admin/database',
+    '/allproducts',
   ].includes(location.pathname);
 
   return (
@@ -205,6 +209,22 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AllOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/alladmins"
+          element={
+            <ProtectedRoute>
+              <AllAdmins />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/allproducts"
+          element={
+            <ProtectedRoute>
+              <AllProducts />
             </ProtectedRoute>
           }
         />

@@ -1,0 +1,189 @@
+.aoi-container {
+  max-width: 95%;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px 30px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.aoi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.aoi-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.refresh-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.refresh-btn:hover {
+  background: #0056b3;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+  text-align: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.orders-table th {
+  background: #f7f9fc;
+  color: #333;
+  font-weight: 600;
+}
+
+.orders-table tr:hover {
+  background: #f9fbff;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+.actions button {
+  border: none;
+  padding: 6px 12px;
+  margin: 0 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.edit-btn {
+  background: #ffc107;
+  color: #222;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #e0a800;
+}
+
+.save-btn:hover {
+  background: #218838;
+}
+
+.cancel-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: 5px;
+  transition: 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #5a6268;
+}
+
+.cancel-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+.status-select {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-badge.new {
+  background: #e7f3ff;
+  color: #0066cc;
+}
+
+.status-badge.pending {
+  background: #ffecb3;
+  color: #856404;
+}
+
+.status-badge.processing {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-badge.shipped {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.delivered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.error {
+  color: #d9534f;
+  text-align: center;
+  font-weight: 500;
+}
+
+.loading {
+  text-align: center;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.updating-text {
+  font-size: 0.85rem;
+  color: #007bff;
+  margin-left: 5px;
+}

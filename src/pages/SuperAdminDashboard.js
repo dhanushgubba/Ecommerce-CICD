@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { href, useNavigate } from 'react-router-dom';
 import './CSSFiles/Dashboard.css';
 import {
   TrendingUp,
@@ -121,12 +121,37 @@ const SuperAdminDashboard = () => {
   ];
 
   const superAdminActions = [
-    { title: 'User Management', icon: Users, color: 'blue' },
-    { title: 'Admin Management', icon: Shield, color: 'red' },
-    { title: 'System Config', icon: Settings, color: 'gray' },
-    { title: 'Database Control', icon: Database, color: 'purple' },
-    { title: 'Server Management', icon: Server, color: 'green' },
-    { title: 'Global Settings', icon: Crown, color: 'yellow' },
+    { title: 'User Management', icon: Users, color: 'blue', href: '/allusers' },
+    {
+      title: 'Admin Management',
+      icon: Shield,
+      color: 'red',
+      href: '/alladmins',
+    },
+    {
+      title: 'System Config',
+      icon: Settings,
+      color: 'gray',
+      href: '/system-config',
+    },
+    {
+      title: 'Database Control',
+      icon: Database,
+      color: 'purple',
+      href: '/database-control',
+    },
+    {
+      title: 'Server Management',
+      icon: Server,
+      color: 'green',
+      href: '/server-management',
+    },
+    {
+      title: 'Global Settings',
+      icon: Crown,
+      color: 'yellow',
+      href: '/global-settings',
+    },
   ];
 
   return (
