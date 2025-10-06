@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { href, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './CSSFiles/Dashboard.css';
 import {
   TrendingUp,
@@ -22,11 +22,14 @@ import {
 
 const SuperAdminDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('7d');
-  const notifications = 8; // Super admin might have more notifications
+  const notifications = 8;
   const navigate = useNavigate();
   const userEmail = localStorage.getItem('userEmail');
+  const [userCount, setUserCount] = useState(0);
+  const [adminCount, setAdminCount] = useState(0);
+  const [isLoadingUserCount, setIsLoadingUserCount] = useState(true);
+  const [isLoadingAdminCount, setIsLoadingAdminCount] = useState(true);
 
-  // Check authentication and role on component mount
   useEffect(() => {
     const checkAuth = () => {
       const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -42,9 +45,7 @@ const SuperAdminDashboard = () => {
         return false;
       }
 
-      // Check if user has super admin privileges
       if (currentUserRole !== 'SUPER_ADMIN') {
-        // Redirect based on actual role
         if (currentUserRole === 'ADMIN') {
           navigate('/admin-dashboard', { replace: true });
         } else {
@@ -56,14 +57,52 @@ const SuperAdminDashboard = () => {
       return true;
     };
 
+    const fetchUserCount = async () => {
+      setIsLoadingUserCount(true);
+      try {
+        const response = await fetch(
+          'http://localhost:8082/api/users/getcount'
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setUserCount(data);
+        } else {
+          console.error('Failed to fetch user count');
+        }
+      } catch (error) {
+        console.error('Error fetching user count:', error);
+      } finally {
+        setIsLoadingUserCount(false);
+      }
+    };
+
+    const fetchAdminCount = async () => {
+      setIsLoadingAdminCount(true);
+      try {
+        const response = await fetch(
+          'http://localhost:8082/api/users/getcountadmins'
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setAdminCount(data);
+        } else {
+          console.error('Failed to fetch admin count');
+        }
+      } catch (error) {
+        console.error('Error fetching admin count:', error);
+      } finally {
+        setIsLoadingAdminCount(false);
+      }
+    };
+
+    fetchUserCount();
+    fetchAdminCount();
     checkAuth();
 
-    // Set up periodic check every 5 seconds
     const authInterval = setInterval(() => {
       checkAuth();
     }, 5000);
 
-    // Listen for storage changes (logout in another tab)
     const handleStorageChange = (e) => {
       if (
         e.key === 'isAuthenticated' ||
@@ -84,7 +123,6 @@ const SuperAdminDashboard = () => {
     };
   }, [navigate]);
 
-  // Super Admin specific stats
   const superAdminStats = [
     {
       title: 'Total Revenue',
@@ -95,20 +133,20 @@ const SuperAdminDashboard = () => {
       color: 'green',
     },
     {
-      title: 'All Users',
-      value: '12,847',
+      title: 'All Admins',
+      value: isLoadingAdminCount ? 'Loading...' : adminCount.toLocaleString(),
       change: '+15.2%',
       trend: 'up',
       icon: Users,
       color: 'blue',
     },
     {
-      title: 'System Load',
-      value: '23.4%',
-      change: '-5.1%',
-      trend: 'down',
-      icon: Server,
-      color: 'purple',
+      title: 'All Users',
+      value: isLoadingUserCount ? 'Loading...' : userCount.toLocaleString(),
+      change: '+15.2%',
+      trend: 'up',
+      icon: Users,
+      color: 'blue',
     },
     {
       title: 'Uptime',
@@ -156,7 +194,6 @@ const SuperAdminDashboard = () => {
 
   return (
     <div className="dashboard">
-      {/* Header */}
       <div className="dashboard-header">
         <div className="header-content">
           <div className="header-left">
@@ -198,7 +235,6 @@ const SuperAdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="stats-grid">
         {superAdminStats.map((stat, index) => (
           <div key={index} className={`stat-card ${stat.color}`}>
@@ -227,7 +263,6 @@ const SuperAdminDashboard = () => {
         ))}
       </div>
 
-      {/* Super Admin Actions Grid */}
       <div className="content-grid">
         <div className="content-card actions-card">
           <div className="card-header">
@@ -239,7 +274,11 @@ const SuperAdminDashboard = () => {
             style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
           >
             {superAdminActions.map((action, index) => (
-              <button key={index} className={`action-btn ${action.color}`}>
+              <button
+                key={index}
+                className={`action-btn ${action.color}`}
+                onClick={() => navigate(action.href)}
+              >
                 <div className={`action-icon ${action.color}`}>
                   <action.icon className="icon" />
                 </div>
@@ -249,7 +288,6 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
 
-        {/* Global System Status */}
         <div className="content-card chart-card">
           <div className="card-header">
             <h2 className="card-title">Global System Status</h2>

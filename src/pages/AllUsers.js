@@ -26,7 +26,7 @@ const AllUsers = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:8082/api/users/allusers', {
+      const response = await fetch('http://localhost:8082/api/users/all', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });

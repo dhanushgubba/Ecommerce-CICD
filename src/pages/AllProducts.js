@@ -468,7 +468,9 @@ const AllProducts = () => {
                     </td>
 
                     <td>
-                      <span className="category-badge">{product.category}</span>
+                      <span className="category-mobile">
+                        {product.category}
+                      </span>
                     </td>
 
                     <td>
