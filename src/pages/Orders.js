@@ -5,6 +5,8 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -143,6 +145,16 @@ const Orders = () => {
     });
   };
 
+  const openOrderDetails = (order) => {
+    setSelectedOrder(order);
+    setShowModal(true);
+  };
+
+  const closeOrderDetails = () => {
+    setSelectedOrder(null);
+    setShowModal(false);
+  };
+
   if (loading) {
     return (
       <div className="orders-page">
@@ -273,7 +285,12 @@ const Orders = () => {
                 </div>
 
                 <div className="order-actions">
-                  <button className="btn-secondary">View Details</button>
+                  <button
+                    className="btn-secondary"
+                    onClick={() => openOrderDetails(order)}
+                  >
+                    View Details
+                  </button>
                   {order.status === 'NEW' && (
                     <button
                       className="btn-danger"
@@ -285,6 +302,141 @@ const Orders = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Order Details Modal */}
+        {showModal && selectedOrder && (
+          <div className="modal-overlay" onClick={closeOrderDetails}>
+            <div className="order-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Order Details - #{selectedOrder.id}</h2>
+                <button className="close-btn" onClick={closeOrderDetails}>
+                  ✕
+                </button>
+              </div>
+
+              <div className="modal-content">
+                <div className="modal-section">
+                  <h3>📋 Order Information</h3>
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <label>Order ID:</label>
+                      <span>#{selectedOrder.id}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Status:</label>
+                      <span
+                        className={`status-badge ${getStatusColor(
+                          selectedOrder.status
+                        )}`}
+                      >
+                        {selectedOrder.status || 'NEW'}
+                      </span>
+                    </div>
+                    <div className="info-item">
+                      <label>Order Date:</label>
+                      <span>{formatDate(selectedOrder.orderDate)}</span>
+                    </div>
+                    <div className="info-item">
+                      <label>Total Amount:</label>
+                      <span className="total-amount">
+                        ${selectedOrder.totalPrice?.toFixed(2) || '0.00'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="modal-section">
+                  <h3>📍 Delivery Information</h3>
+                  <div className="delivery-info">
+                    {selectedOrder.address && (
+                      <div className="info-item">
+                        <label>Delivery Address:</label>
+                        <span>{selectedOrder.address}</span>
+                      </div>
+                    )}
+                    {selectedOrder.phoneno && (
+                      <div className="info-item">
+                        <label>Contact Number:</label>
+                        <span>{selectedOrder.phoneno}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="modal-section">
+                  <h3>
+                    🛍️ Order Items ({selectedOrder.items?.length || 0} items)
+                  </h3>
+                  <div className="modal-items-list">
+                    {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                      selectedOrder.items.map((item, index) => (
+                        <div key={item.id || index} className="modal-item">
+                          <div className="item-row">
+                            <div className="item-info">
+                              <h4>
+                                {item.name || `Product #${item.productId}`}
+                              </h4>
+                              {item.brand && (
+                                <p className="item-brand">
+                                  Brand: {item.brand}
+                                </p>
+                              )}
+                              <p className="item-id">
+                                Product ID: {item.productId}
+                              </p>
+                            </div>
+                            <div className="item-pricing">
+                              <div className="quantity">
+                                Qty: {item.quantity}
+                              </div>
+                              <div className="unit-price">
+                                ${item.price?.toFixed(2) || '0.00'} each
+                              </div>
+                              <div className="item-total">
+                                Total: $
+                                {(
+                                  (item.price || 0) * (item.quantity || 0)
+                                ).toFixed(2)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="no-items">No items found for this order.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="modal-section total-section">
+                  <div className="order-total">
+                    <h3>
+                      💰 Order Total: $
+                      {selectedOrder.totalPrice?.toFixed(2) || '0.00'}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                {selectedOrder.status === 'NEW' && (
+                  <button
+                    className="btn-danger"
+                    onClick={() => {
+                      cancelUserOrder(selectedOrder.id);
+                      closeOrderDetails();
+                    }}
+                  >
+                    Cancel Order
+                  </button>
+                )}
+                <button className="btn-primary" onClick={closeOrderDetails}>
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
