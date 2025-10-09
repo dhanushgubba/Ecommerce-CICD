@@ -193,8 +193,11 @@ const AdminProducts = () => {
   };
 
   const handleQuickView = (product) => {
+    console.log('🔍 Quick View clicked for product:', product);
+    console.log('📊 Current showQuickView state:', showQuickView);
     setQuickViewProduct(product);
     setShowQuickView(true);
+    console.log('✅ Quick View state updated - should show modal');
   };
 
   const closeQuickView = () => {
@@ -552,13 +555,58 @@ const AdminProducts = () => {
       </div>
 
       {/* Quick View Modal */}
+      {console.log('🖥️ Modal Render Check:', {
+        showQuickView,
+        quickViewProduct: !!quickViewProduct,
+      })}
       {showQuickView && quickViewProduct && (
-        <div className="quick-view-modal" onClick={closeQuickView}>
+        <div
+          className="quick-view-modal"
+          onClick={closeQuickView}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
           <div
             className="quick-view-content"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              maxWidth: '900px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              position: 'relative',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            }}
           >
-            <button className="close-btn" onClick={closeQuickView}>
+            <button
+              className="close-btn"
+              onClick={closeQuickView}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: '#f8f9fa',
+                border: 'none',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                fontSize: '18px',
+                zIndex: 10001,
+              }}
+            >
               ✕
             </button>
 

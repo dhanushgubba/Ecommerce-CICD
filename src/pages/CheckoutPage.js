@@ -19,6 +19,25 @@ const CheckoutPage = () => {
     },
   });
 
+  const [paymentStatus, setPaymentStatus] = useState({
+    processing: false,
+    completed: false,
+    failed: false,
+    transactionId: null,
+  });
+
+  // Payment method options
+  const paymentMethods = [
+    { id: 'credit-card', label: 'Credit Card', icon: '💳' },
+    { id: 'debit-card', label: 'Debit Card', icon: '💳' },
+    { id: 'paypal', label: 'PayPal', icon: '🅿️' },
+    { id: 'google-pay', label: 'Google Pay', icon: '🔵' },
+    { id: 'apple-pay', label: 'Apple Pay', icon: '🍎' },
+    { id: 'upi', label: 'UPI Payment', icon: '📱' },
+    { id: 'bank-transfer', label: 'Bank Transfer', icon: '🏦' },
+    { id: 'cash-on-delivery', label: 'Cash on Delivery', icon: '💵' },
+  ];
+
   const userId = localStorage.getItem('userId');
 
   // Utility function to help track orders by product ID
@@ -113,6 +132,77 @@ const CheckoutPage = () => {
     }
   };
 
+  // Process payment through payment microservice
+  const processPayment = async (orderId, totalAmount) => {
+    setPaymentStatus({
+      processing: true,
+      completed: false,
+      failed: false,
+      transactionId: null,
+    });
+
+    try {
+      const paymentPayload = {
+        orderId: orderId,
+        amount: totalAmount,
+        currency: 'USD',
+        paymentMethod: checkoutData.paymentMethod,
+        paymentDetails: checkoutData.paymentMethod.includes('card')
+          ? {
+              cardNumber: checkoutData.cardDetails.cardNumber,
+              expiryDate: checkoutData.cardDetails.expiryDate,
+              cvv: checkoutData.cardDetails.cvv,
+              cardholderName: checkoutData.cardDetails.cardholderName,
+            }
+          : null,
+        userId: parseInt(userId),
+        customerInfo: {
+          address: checkoutData.address,
+          phoneNumber: checkoutData.phoneNumber,
+        },
+      };
+
+      console.log('💳 Processing payment:', paymentPayload);
+
+      // Call your payment microservice (adjust port as needed)
+      const paymentResponse = await fetch(
+        'http://localhost:8086/api/payments/process',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentPayload),
+        }
+      );
+
+      if (paymentResponse.ok) {
+        const paymentResult = await paymentResponse.json();
+        console.log('✅ Payment processed successfully:', paymentResult);
+
+        setPaymentStatus({
+          processing: false,
+          completed: true,
+          failed: false,
+          transactionId: paymentResult.transactionId || paymentResult.id,
+        });
+
+        return paymentResult;
+      } else {
+        throw new Error(`Payment failed: ${paymentResponse.status}`);
+      }
+    } catch (error) {
+      console.error('❌ Payment processing failed:', error);
+      setPaymentStatus({
+        processing: false,
+        completed: false,
+        failed: true,
+        transactionId: null,
+      });
+      throw error;
+    }
+  };
+
   // Process the order
   const processOrder = async () => {
     if (!checkoutData.address.trim()) {
@@ -198,6 +288,40 @@ const CheckoutPage = () => {
         }
 
         console.log('✅ Order placed successfully:', orderResult);
+
+        // Process payment after successful order creation
+        let paymentResult = null;
+        if (checkoutData.paymentMethod !== 'cash-on-delivery') {
+          try {
+            console.log('💳 Processing payment for order:', orderResult.id);
+            paymentResult = await processPayment(
+              orderResult.id,
+              parseFloat(calculateTotal())
+            );
+            console.log('✅ Payment processed successfully:', paymentResult);
+
+            // Update order status to PAID after successful payment
+            await fetch(
+              `http://localhost:8084/api/orders/${orderResult.id}/status`,
+              {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  status: 'PAID',
+                  paymentMethod: checkoutData.paymentMethod,
+                  transactionId:
+                    paymentResult.transactionId || paymentResult.id,
+                }),
+              }
+            );
+          } catch (paymentError) {
+            console.error('❌ Payment failed:', paymentError);
+            alert(`Order created but payment failed: ${paymentError.message}`);
+            // Don't return here - still show order confirmation
+          }
+        }
         console.log('🎯 ORDER TRACKING SUMMARY:');
         console.log('   📋 Order ID:', orderResult.id);
         console.log('   👤 User ID:', userId);
@@ -214,18 +338,22 @@ const CheckoutPage = () => {
           );
         });
 
-        // Store order details for success page with PRODUCT IDs
+        // Store order details for success page with PRODUCT IDs and PAYMENT INFO
         localStorage.setItem(
           'lastOrder',
           JSON.stringify({
             id: orderResult.id || Math.floor(Math.random() * 100000),
             totalPrice: calculateTotal(),
             orderDate: new Date().toLocaleDateString(),
-            status: orderResult.status || 'NEW',
+            status: paymentResult ? 'PAID' : orderResult.status || 'NEW',
             itemCount: cartItems.length,
             phoneNumber: checkoutData.phoneNumber || checkoutData.phoneno,
             shippingAddress: checkoutData.address,
+            // PAYMENT INFORMATION STORED
             paymentMethod: checkoutData.paymentMethod,
+            paymentStatus: paymentResult ? 'COMPLETED' : 'PENDING',
+            transactionId: paymentResult?.transactionId || null,
+            paymentTimestamp: paymentResult ? new Date().toISOString() : null,
             // IMPORTANT: Store the actual items with product IDs for tracking
             items: cartItems.map((item) => ({
               productId: item.productId || item.id,
@@ -399,47 +527,45 @@ const CheckoutPage = () => {
             <div className="form-section">
               <h3>💳 Payment Method</h3>
               <div className="payment-methods">
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="credit-card"
-                    checked={checkoutData.paymentMethod === 'credit-card'}
-                    onChange={handleInputChange}
-                  />
-                  <span>💳 Credit Card</span>
-                </label>
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="debit-card"
-                    checked={checkoutData.paymentMethod === 'debit-card'}
-                    onChange={handleInputChange}
-                  />
-                  <span>💳 Debit Card</span>
-                </label>
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="paypal"
-                    checked={checkoutData.paymentMethod === 'paypal'}
-                    onChange={handleInputChange}
-                  />
-                  <span>🅿️ PayPal</span>
-                </label>
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cash-on-delivery"
-                    checked={checkoutData.paymentMethod === 'cash-on-delivery'}
-                    onChange={handleInputChange}
-                  />
-                  <span>💵 Cash on Delivery</span>
-                </label>
+                {paymentMethods.map((method) => (
+                  <label
+                    key={method.id}
+                    className={`payment-option ${
+                      checkoutData.paymentMethod === method.id ? 'selected' : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value={method.id}
+                      checked={checkoutData.paymentMethod === method.id}
+                      onChange={handleInputChange}
+                    />
+                    <span className="payment-icon">{method.icon}</span>
+                    <span className="payment-label">{method.label}</span>
+                  </label>
+                ))}
               </div>
+
+              {/* Payment Status Indicator */}
+              {paymentStatus.processing && (
+                <div className="payment-status processing">
+                  <span>🔄 Processing payment...</span>
+                </div>
+              )}
+              {paymentStatus.completed && (
+                <div className="payment-status completed">
+                  <span>
+                    ✅ Payment completed! Transaction ID:{' '}
+                    {paymentStatus.transactionId}
+                  </span>
+                </div>
+              )}
+              {paymentStatus.failed && (
+                <div className="payment-status failed">
+                  <span>❌ Payment failed. Please try again.</span>
+                </div>
+              )}
 
               {(checkoutData.paymentMethod === 'credit-card' ||
                 checkoutData.paymentMethod === 'debit-card') && (
