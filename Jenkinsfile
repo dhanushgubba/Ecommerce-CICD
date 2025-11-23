@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     sh '''
-                      ssh -o StrictHostKeyChecking=no ubuntu@EC2_IP_ADDRESS '
+                      ssh -o StrictHostKeyChecking=no ubuntu@3.108.194.180 '
                         docker pull dhanushgubba/react-frontend:latest &&
                         docker stop react-frontend || true &&
                         docker rm react-frontend || true &&
