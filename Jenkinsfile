@@ -1,28 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_USER = 'dhanushgubba'
+    }
+
     stages {
-        stage('Build React App') {
+        stage('Checkout') {
             steps {
-                sh 'npm install'
-                sh 'npm run build'
+                git 'https://github.com/dhanushgubba/Ecommerce-CICD.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Install & Build') {
             steps {
-                sh 'docker build -t dhanushgubba/react-frontend:latest .'
+                sh '''
+                npm install
+                npm run build
+                '''
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Docker Build') {
             steps {
-                withCredentials([string(credentialsId: 'docker-password', variable: 'DOCKER_PASSWORD')]) {
-                    sh '''
-                      echo "$DOCKER_PASSWORD" | docker login -u dhanushgubba --password-stdin
-                      docker push dhanushgubba/react-frontend:latest
-                    '''
+                sh 'docker build -t frontend:latest .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASSWORD')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKERHUB_USER --password-stdin'
                 }
+                sh 'docker tag frontend:latest $DOCKERHUB_USER/frontend:latest'
+                sh 'docker push $DOCKERHUB_USER/frontend:latest'
             }
         }
 
@@ -30,12 +41,12 @@ pipeline {
             steps {
                 sshagent(['ec2-ssh-key']) {
                     sh '''
-                      ssh -o StrictHostKeyChecking=no ubuntu@3.108.194.180 '
-                        docker pull dhanushgubba/react-frontend:latest &&
-                        docker stop react-frontend || true &&
-                        docker rm react-frontend || true &&
-                        docker run -d --name react-frontend -p 3000:80 dhanushgubba/react-frontend:latest
-                      '
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.108.194.180 "
+                        docker pull $DOCKERHUB_USER/frontend:latest &&
+                        docker stop frontend || true &&
+                        docker rm frontend || true &&
+                        docker run -d -p 80:80 --name frontend $DOCKERHUB_USER/frontend:latest
+                    "
                     '''
                 }
             }
